@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform:
+- AWS::Serverless-2016-10-31
+- AWS::CodeStar
+
+# Note: BUCKET_TARGET is env variable from buildspec.yml
+Parameters:
+  ProjectId:
+    Type: String
+    Description: 'AWS CodeStar projectID'
+  BucketTarget:
+    Type: String
+    Description: "The bucket to which files are uploaded"
+    Default: BUCKET_TARGET_VAR
+
+Resources:
+  FileUploader:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.get
+      Runtime: nodejs8.10
+      Role:
+        Fn::ImportValue:
+          !Join ['-', [!Ref 'ProjectId', !Ref 'AWS::Region', 'LambdaTrustRole']]
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+            
+  Presigner:
+    Type: AWS::Serverless::Function
+    DependsOn: FileUploaderS3Policy
+    Properties:
+      Handler: presign.handler
+      Runtime: nodejs8.10
+      Role: 'arn:aws:iam::655302116590:role/CodeStarWorker-myfinbot-Lambda'
+      Environment:
+       Variables:
+          BUCKET_NAME: !Ref 'BucketTarget'
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /presign
+            Method: post
+  
+  FileUploaderS3Policy:
+    Type: "AWS::IAM::Policy"
+    Properties: 
+      PolicyName: "FileUploaderS3Policy"
+      PolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Action: 
+              - "s3:PutObject"
+            Resource: "arn:aws:s3:::BUCKET_TARGET_VAR/*"
+      Roles: 
+        - 
+            'CodeStarWorker-myfinbot-Lambda'

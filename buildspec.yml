@@ -1,0 +1,34 @@
+version: 0.2
+env:
+  variables:
+    BUCKET_TARGET: 'INSERT HERE YOUR BUCKETNAME IDENTIFIER'
+    STAGE_NAME: 'Prod'
+    
+phases:
+  install:
+    commands:
+      - printenv
+      # Install dependencies needed for running tests
+      - npm install
+
+      # Upgrade AWS CLI to the latest version
+      - pip install --upgrade awscli
+  pre_build:
+    commands:
+      # Discover and run unit tests in the 'tests' directory
+      - npm test
+  build:
+    commands:
+      # Use AWS SAM to package the application by using AWS CloudFormation
+      - sed -i -e "s|BUCKET_TARGET_VAR|$BUCKET_TARGET|g" template.yml
+      - aws s3 cp --recursive public/ s3://$WEBSITE_S3_BUCKET/public/ --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+      - sed -i -e "s|assets/|$WEBSITE_S3_PREFIX/public/assets/|g" public/index.html
+      - sed -i -e "s|BUCKET_TARGET_VAR|$BUCKET_TARGET|g" public/index.html
+      - sed -i -e "s|STAGE_VAR|$STAGE_NAME|g" public/index.html
+      - aws cloudformation package --template template.yml --s3-bucket $S3_BUCKET --output-template template-export.yml
+
+
+artifacts:
+  type: zip
+  files:
+    - template-export.yml

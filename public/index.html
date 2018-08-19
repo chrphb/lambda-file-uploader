@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>S3 File Uploader</title>
+    <meta name="description" content="" />
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <link href="assets/css/gradients.css" rel="stylesheet">
+    <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" rel="icon" type="image/x-icon" />
+    <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css'>
+
+    <script>
+        // Gateway URL configuration ----------------------- 
+        // Change only if consistent with template.yml
+        let config = {}
+        config.gatewayUrl = "/STAGE_VAR/presign"
+        // --------------------------------------------------
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                S3 File Uploader
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="controlFileId">Select the file to be uploaded to your S3 Bucket BUCKET_TARGET_VAR:</label>
+                        <input type="file" class="form-control-file" id="file_input" onchange="getSelectedFile()" title="input this file">
+                        <br>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js'></script>
+    <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.7.1/remarkable.js'></script>
+    <script src="assets/js/model.js"></script>
+    <script src="assets/js/actions.js"></script>
+
+</body>
+
+</html>
